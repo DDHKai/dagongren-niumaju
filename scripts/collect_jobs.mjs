@@ -1,15 +1,15 @@
 // Generic, bounded UI navigation through an existing isolated Chrome session.
 import {readFile,writeFile,mkdir,rename} from 'node:fs/promises';
 import {resolve,join} from 'node:path';
-import {validateConfig,checkpoint,ensureResume,checkPage,companyLink,addJob,canonicalJob} from './job_collector_core.mjs';
+import {validateConfig,checkpoint,ensureResume,checkPage,companyLink,addJob,canonicalJob,extendQueries} from './job_collector_core.mjs';
 import {snapshotExpression} from './job_collector_dom.mjs';
-const args=process.argv.slice(2),options={};for(let i=0;i<args.length;i+=2){if(!['--config','--output','--endpoint','--tab-id'].includes(args[i])||!args[i+1])throw Error('Usage: --config JSON --output PRIVATE_DIR [--endpoint http://127.0.0.1:PORT] [--tab-id ID]');options[args[i]]=args[i+1]}
+const args=process.argv.slice(2),options={};for(let i=0;i<args.length;i+=2){if(!['--config','--output','--endpoint','--tab-id','--previous-config'].includes(args[i])||!args[i+1])throw Error('Usage: --config JSON --output PRIVATE_DIR [--endpoint http://127.0.0.1:PORT] [--tab-id ID]');options[args[i]]=args[i+1]}
 if(!options['--config']||!options['--output'])throw Error('CONFIG_AND_OUTPUT_REQUIRED');
 const cfg=validateConfig(JSON.parse((await readFile(options['--config'],'utf8')).replace(/^\uFEFF/,'')));
 const endpoint=new URL(options['--endpoint']||'http://127.0.0.1:9333');
 if(endpoint.protocol!=='http:'||endpoint.hostname!=='127.0.0.1'||endpoint.username||endpoint.password||endpoint.pathname!=='/')throw Error('LOCAL_ENDPOINT_ONLY');
 const dir=resolve(options['--output']);await mkdir(dir,{recursive:true});const file=join(dir,'checkpoint.json');
-let saved;try{saved=ensureResume(JSON.parse(await readFile(file,'utf8')),cfg)}catch(e){if(e.code==='ENOENT')saved=checkpoint(cfg);else throw e}
+let saved;try{const raw=await readFile(file,'utf8');const old=JSON.parse(raw);if(options['--previous-config']){const previous=JSON.parse((await readFile(options['--previous-config'],'utf8')).replace(/^\uFEFF/,''));saved=extendQueries(old,previous,cfg);await writeFile(join(dir,'checkpoint-before-extension-'+Date.now()+'.json'),raw,{flag:'wx'});await writeFile(file+'.tmp',JSON.stringify(saved,null,2));await rename(file+'.tmp',file)}else saved=ensureResume(old,cfg)}catch(e){if(e.code==='ENOENT'&&!options['--previous-config'])saved=checkpoint(cfg);else throw e}
 async function save(){await writeFile(file+'.tmp',JSON.stringify(saved,null,2));await rename(file+'.tmp',file)}
 let tabs;
 try{tabs=await(await fetch(new URL('/json/list',endpoint),{signal:AbortSignal.timeout(5000)})).json()}

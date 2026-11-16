@@ -9,6 +9,15 @@ export function validateConfig(c){
 export function configHash(c){return createHash('sha256').update(JSON.stringify(validateConfig(c))).digest('hex')}
 export function checkpoint(c){return {schemaVersion:1,configHash:configHash(c),targetCompanies:c.targetCompanies,status:'pending',jobs:[],companies:[],failures:[],searches:[],attemptedJobs:[],review:'pending'}}
 export function ensureResume(saved,c){if(saved.schemaVersion!==1||saved.configHash!==configHash(c))throw Error('CONFIG_CHANGED_USE_NEW_OUTPUT');return saved}
+export function extendQueries(saved,previous,next){
+ ensureResume(saved,previous);validateConfig(next);
+ const before={...previous},after={...next};delete before.queries;delete after.queries;
+ if(configHash({...before,queries:['scope']})!==configHash({...after,queries:['scope']}))throw Error('EXTENSION_SCOPE_CHANGED');
+ if(next.queries.length<=previous.queries.length||previous.queries.some((q,i)=>next.queries[i]!==q)||new Set(next.queries).size!==next.queries.length)throw Error('APPEND_UNIQUE_QUERIES_ONLY');
+ const out=structuredClone(saved);
+ out.configHistory=[...(out.configHistory||[]),{previousConfigHash:saved.configHash,nextConfigHash:configHash(next),addedQueries:next.queries.slice(previous.queries.length),recordedAt:new Date().toISOString()}];
+ out.configHash=configHash(next);out.status='pending-explicit-query-extension';return out;
+}
 export function checkPage(s){if(/环境存在异常|安全验证|访问过于频繁|请完成验证/.test(s.text))throw Error('PLATFORM_CHECK_STOP');if(/登录查看完整内容|请登录后查看|登录\/注册/.test(s.text))throw Error('LOGIN_REQUIRED_STOP')}
 export function companyLink(job){
  // Only explicitly scoped company-section links are eligible; never arbitrary recommendations.

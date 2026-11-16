@@ -1,3 +1,4 @@
+import {extendQueries} from './job_collector_core.mjs';
 import assert from 'node:assert/strict';
 import {checkpoint,ensureResume,checkPage,companyLink,addJob,canonicalJob,validateConfig} from './job_collector_core.mjs';
 const c={city:'101210100',queries:['示例'],targetCompanies:100,maxJobDetails:200,delayMs:1500};
@@ -19,3 +20,5 @@ addJob(s,{...job,url:'https://www.zhipin.com/job_detail/second.html',companyLink
 addJob(s,{...job,url:'https://www.zhipin.com/job_detail/third.html',companyLinks:[cl]},company);
 assert.equal(s.jobs.length,3);assert.equal(s.companies.length,1);assert.equal(s.review,'pending');
 console.log('PASS collector pure-policy checks: limits, config identity, URL scope, stop rules, anonymous isolation, multi-job company dedupe. Live CDP/DOM not verified.');
+
+const extended=extendQueries(s,c,{...c,queries:[...c.queries,"追加示例"]});assert.equal(extended.jobs.length,s.jobs.length);assert.deepEqual(extended.companies,s.companies);assert.notEqual(extended.configHash,s.configHash);assert.equal(extended.configHistory.length,1);assert.throws(()=>extendQueries(s,c,{...c,city:"101020100",queries:[...c.queries,"追加示例"]}));assert.throws(()=>extendQueries(s,c,{...c,queries:["替换"]}));assert.throws(()=>extendQueries(s,c,c));assert.equal(s.configHistory,undefined);console.log("PASS explicit query extension preserves checkpoint, rejects scope changes and silent replacement");
