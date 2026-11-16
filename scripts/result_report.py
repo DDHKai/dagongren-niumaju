@@ -163,10 +163,27 @@ def html_report(report):
 
 def closure_audit(folder):
     """Read-only readiness counts; never confirms facts, choices or platform actions."""
-    report=generate(Path(folder))
+    folder=Path(folder)
+    base={'schemaVersion':1,'kind':'read-only-closure-readiness'}
+    try:meta=read(folder/'case.json')
+    except (OSError,ValueError):
+        return {**base,'ready':False,'missingStages':['case-metadata'],'nextStep':'定位包含有效case.json的单个案例目录；不从阅读版报告反造证据。'}
+    if not isinstance(meta,dict):
+        return {**base,'ready':False,'missingStages':['case-metadata'],'nextStep':'案例元数据格式无效，保留现场后检查。'}
+    missing=[]
+    for key,label in [('versions','resume-review'),('marketReports','market-registration')]:
+        versions=meta.get(key)
+        if not isinstance(versions,list) or not versions:missing.append(label)
+    if missing:
+        return {**base,'ready':False,'missingStages':missing,
+                'nextStep':'先完成经历原文校对及必要事实确认，再登记原始岗位检查点；不要重新采集或放宽条件。'}
+    try:report=generate(folder)
+    except (OSError,ValueError,KeyError,IndexError,TypeError):
+        return {**base,'ready':False,'missingStages':['evidence-integrity-or-layout'],
+                'nextStep':'原文、检查点或预筛引用缺失／不一致；保留现场，在工作区核对来源，不能忽略校验。'}
     rows=report['jobs']
     reviewed=sum(r['abilityStatus']=='human-reviewed' for r in rows)
-    return {'schemaVersion':1,'kind':'read-only-closure-readiness',
+    return {**base,'ready':True,'missingStages':[],
             'coverage':report['coverage'],'jobsAbilityReviewed':reviewed,
             'jobsAbilityPending':len(rows)-reviewed,
             'groups':{g:sum(r['group']==g for r in rows) for g in

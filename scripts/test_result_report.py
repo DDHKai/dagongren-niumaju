@@ -33,6 +33,16 @@ class ResultTests(unittest.TestCase):
         self.assertEqual(result['coverage']['actualCompanies'],1)
         after={str(p.relative_to(self.folder)):p.read_bytes() for p in self.folder.rglob('*') if p.is_file()}
         self.assertEqual(before,after)
+    def test_incomplete_case_reports_stages_without_fake_counts(self):
+        (self.folder/'case.json').write_text(json.dumps({'versions':[]}),encoding='utf-8')
+        before=(self.folder/'case.json').read_bytes()
+        result=closure_audit(self.folder)
+        self.assertFalse(result['ready'])
+        self.assertEqual(result['missingStages'],['resume-review','market-registration'])
+        self.assertNotIn('coverage',result)
+        self.assertEqual(before,(self.folder/'case.json').read_bytes())
+    def test_missing_case_reports_metadata_gap(self):
+        self.assertEqual(closure_audit(self.folder/'absent')['missingStages'],['case-metadata'])
     def test_company_size_uses_header_only(self):
         r=generate(self.folder);self.assertEqual(r['jobs'][0]['companySize']['value'],'20-99人')
         self.assertEqual(len(r['jobs'][0]['companySize']['evidence']),1)
