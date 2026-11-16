@@ -136,7 +136,7 @@ def summary(report):
 def html_report(report):
     e=lambda x:escape(str(x),quote=True)
     parts=['<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; style-src &#39;unsafe-inline&#39;; base-uri &#39;none&#39;"><title>本地求职决策报告</title><style>body{max-width:1000px;margin:30px auto;padding:20px;font:16px/1.7 system-ui;color:#183949}article{padding:22px;border:1px solid #ccdce2;margin:20px 0}h2{font-size:24px}h3{font-size:18px}pre{white-space:pre-wrap;overflow-wrap:anywhere}.warn{background:#fff1cf;padding:12px}</style><h1>本地求职决策报告</h1><p class="warn">私人材料，分享前逐项脱敏。不是匿名报告。本文件不会触发平台操作；收藏状态见台账，沟通与投递请本人完成。岗位当前状态须重新确认。</p>']
-    sums=summary(report);labels={'preferred':'人工优选','reserve':'人工候选','tradeoff':'存在取舍','excluded':'本轮不考虑','unreviewed':'尚未选定'}
+    sums=summary(report);labels={'preferred':'人工优选','reserve':'人工候选','tradeoff':'扩展','excluded':'本轮不考虑','unreviewed':'尚未选定'}
     parts.append('<h2>优选 '+str(sums['counts']['preferred'])+'/10 · 候选 '+str(sums['counts']['reserve'])+'/10</h2>')
     parts.append('<p>覆盖 '+e(report['coverage']['actualCompanies'])+'/100家公司；优选与候选均由本轮人工指定，不凑数。</p><p>'+e(report['sortingBasis'])+'。'+e(report['tiePolicy'])+'</p>')
     parts.append('<h3>条件差异共性（岗位计数，未知与明确不符分开）</h3>')
