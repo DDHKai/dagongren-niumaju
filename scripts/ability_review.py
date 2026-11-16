@@ -31,15 +31,24 @@ def directions(facts):
         if refs:result.append({'id':'direction_'+digest(label.encode())[:16],'label':label,'factIds':refs[:5],'status':'hypothesis','explanation':'仅从已确认任务检索的探索假设，未验证市场需求或本人意愿，不推定具备全部岗位技能。'})
     return result
 
+def company_signature(quote):
+    """Conservative full-line signature filter; task-bearing sentences stay."""
+    if re.search(r'负责|熟悉|要求|需要|能够|协助|对接|服务|管理|经验|优先|能力|参与|了解|支持|维护|开发|运营|招聘|岗位|工作|任职',quote):return False
+    return bool(re.fullmatch(r'(?:公司名称\s*[:：]\s*)?[\u4e00-\u9fffA-Za-z0-9（）()·]{2,60}(?:有限责任公司|股份有限公司|有限公司)',quote))
+
 def generate(job,facts):
     source=job['source'];text=source['text'];start=text.find('职位描述')
     if start<0:raise ValueError('Missing job description scope')
     start+=len('职位描述');end=min([p for marker in ('竞争力分析','BOSS 安全提示','更多职位','看过该职位的人还看了') if (p:=text.find(marker,start))>=0] or [len(text)])
-    requirements=[]
+    requirements=[];excluded=[]
     for m in re.finditer(r'[^\n]+',text[start:end]):
         quote=m.group().strip()
-        if len(quote)<8:continue
         a=start+m.start()+len(m.group())-len(m.group().lstrip());b=a+len(quote)
+        if company_signature(quote):
+            excluded.append({'quote':quote,'start':a,'end':b,'sourceHash':digest(text.encode()),
+                             'reason':'standalone-company-signature-not-a-requirement'})
+            continue
+        if len(quote)<8:continue
         ident='req_'+hashlib.sha256((job['id']+str(a)+quote).encode()).hexdigest()[:20]
         related=[]
         for f in facts:
@@ -55,6 +64,7 @@ def generate(job,facts):
     identity={'jobId':job['id'],'jobSourceHash':digest(text.encode()),'candidateFactsHash':hash_json(facts)}
     return {'schemaVersion':1,'context':identity,'contextHash':hash_json(identity),'facts':facts,'requirements':requirements,
         'reviewStatus':'draft','semanticVerification':'not-automated','totalScore':None,'directionHypotheses':directions(facts),'directionFeedback':{},
+        'excludedSourceLines':excluded,'segmentationVersion':'company-signature-v1',
         'warnings':['原文按行切分可能是断行或标签，不保证完整要求；原文顺序不是重要性排序。','sharedTerms只用于检索，不证明能力；未检索到也不证明候选人不会。','需要逐项人工判断；本人确认不等于第三方核验。','最多保留60段，覆盖范围需人工核对，不把草稿当完整JD深评。']}
 
 def review(draft,items,context_hash,reviewer_confirmed):

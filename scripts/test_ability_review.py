@@ -7,6 +7,22 @@ def fixture(status='candidate-confirmed'):
     return generate(job,facts)
 
 class AbilityTests(unittest.TestCase):
+    def test_company_signature_excluded_with_exact_evidence(self):
+        text='职位描述\n负责电商预算管理与数据复盘\n杭州示例电子商务有限公司\n竞争力分析'
+        d=generate({'id':'synthetic','source':{'text':text}},[])
+        self.assertEqual(len(d['requirements']),1)
+        self.assertEqual(len(d['excludedSourceLines']),1)
+        e=d['excludedSourceLines'][0]
+        self.assertEqual(text[e['start']:e['end']],e['quote'])
+    def test_company_name_in_actual_requirement_not_removed(self):
+        lines=['负责对接杭州示例有限公司','熟悉杭州示例有限公司','服务北京示例有限责任公司','公司名称：杭州示例有限公司']
+        d=generate({'id':'synthetic','source':{'text':'职位描述\n'+'\n'.join(lines)}},[])
+        self.assertEqual([r['quote'] for r in d['requirements']],lines[:3])
+        self.assertEqual(d['excludedSourceLines'][0]['quote'],lines[3])
+    def test_ambiguous_short_company_label_not_aggressively_filtered(self):
+        line='示例电子商务业务协同'
+        d=generate({'id':'synthetic','source':{'text':'职位描述\n'+line}},[])
+        self.assertEqual(d['requirements'][0]['quote'],line)
     def test_retrieval_never_autoconfirms(self):
         d=fixture();self.assertEqual(len(d['requirements']),2)
         self.assertTrue(all(r['decision']=='unreviewed' for r in d['requirements']))
