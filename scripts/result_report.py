@@ -5,6 +5,7 @@ from datetime import datetime,timezone
 from html import escape
 import json
 import re
+from pathlib import Path
 from urllib.parse import urlsplit
 from ability_review import hash_json,load_facts,generate as ability_generate,review as ability_review
 from prescreen_jobs import run as prescreen
@@ -159,3 +160,23 @@ def html_report(report):
             for item in r['advice'][key]:parts.append('<p>'+e(item.get('quote') or item.get('question') or (item.get('jobQuote','')+' '+item.get('reason','')))+'</p>')
         parts.append('<details><summary>条件、公司研究及来源</summary><pre>'+e(json.dumps({'dimensions':r['dimensions'],'companySize':r['companySize'],'companyResearch':r['companyResearch'],'capturedAt':r['capturedAt'],'selection':r['selection']},ensure_ascii=False,indent=2))+'</pre></details></article>')
     return ''.join(parts)+'</html>'
+
+def closure_audit(folder):
+    """Read-only readiness counts; never confirms facts, choices or platform actions."""
+    report=generate(Path(folder))
+    rows=report['jobs']
+    reviewed=sum(r['abilityStatus']=='human-reviewed' for r in rows)
+    return {'schemaVersion':1,'kind':'read-only-closure-readiness',
+            'coverage':report['coverage'],'jobsAbilityReviewed':reviewed,
+            'jobsAbilityPending':len(rows)-reviewed,
+            'groups':{g:sum(r['group']==g for r in rows) for g in
+                      ('披露条件满足','值得核实','明确存在取舍')},
+            'limitations':['Counts only; no shortlist saved, no new report persisted, no export or platform action executed.',
+                           'Coverage is distinct platform company IDs, not independently verified legal identities.']}
+
+if __name__=='__main__':
+    import argparse
+    parser=argparse.ArgumentParser(description='Read-only result closure readiness; keep output private.')
+    parser.add_argument('--audit-case',type=Path,required=True)
+    args=parser.parse_args()
+    print(json.dumps(closure_audit(args.audit_case),ensure_ascii=False,indent=2))

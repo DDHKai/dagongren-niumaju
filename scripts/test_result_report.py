@@ -5,7 +5,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from workspace_server import Workspace
-from result_report import generate,choose,reorder,summary,html_report,size
+from result_report import generate,choose,reorder,summary,html_report,size,closure_audit
 from test_prescreen_jobs import job
 
 class ResultTests(unittest.TestCase):
@@ -25,6 +25,14 @@ class ResultTests(unittest.TestCase):
     def test_no_automatic_shortlist_or_score(self):
         r=generate(self.folder);self.assertIsNone(r['totalScore']);self.assertEqual(summary(r)['shortfall']['preferred'],10)
         self.assertEqual(r['coverage']['actualCompanies'],1);self.assertFalse(r['coverage']['complete']);self.assertEqual(r['jobs'][0]['abilityStatus'],'not-reviewed')
+    def test_readiness_audit_does_not_save_or_confirm(self):
+        before={str(p.relative_to(self.folder)):p.read_bytes() for p in self.folder.rglob('*') if p.is_file()}
+        result=closure_audit(self.folder)
+        self.assertEqual(result['jobsAbilityPending'],1)
+        self.assertEqual(result['jobsAbilityReviewed'],0)
+        self.assertEqual(result['coverage']['actualCompanies'],1)
+        after={str(p.relative_to(self.folder)):p.read_bytes() for p in self.folder.rglob('*') if p.is_file()}
+        self.assertEqual(before,after)
     def test_company_size_uses_header_only(self):
         r=generate(self.folder);self.assertEqual(r['jobs'][0]['companySize']['value'],'20-99人')
         self.assertEqual(len(r['jobs'][0]['companySize']['evidence']),1)
