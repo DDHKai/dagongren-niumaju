@@ -39,6 +39,10 @@ python scripts/resume_workspace.py confirm --output data/private-intakes/example
 
 ## 验证与边界
 
+### 2026-11-17 test4 回传更新
+
+Intel macOS test4官方A完整包装器通过，三步退出0，source-check源资产SHA256为44d63e57be46fcca5b690967593165d4d1f4c810a73708293eba691cd73d15a4。结果包SHA256为55108c3679863a9c3b57c2c0bd7aa6ac8312270b6431b80e07c2194a87d3a907，定向包为a4ef77a6198b014f105443670b951f7f376bd0da878b5201544e9d1317552ace；两个包与sidecar一致、无ZIP损坏，标准包内部清单全部匹配、无缺失。未完成案例诊断、助手不提升本人确认、事实变化使旧结果失效、保存字节验证均有定向回传通过。回传T4实际测公司人数header范围，未定向测试新增公司名称落款过滤，不冒称五项覆盖全部新改动；后者仅开发单测覆盖，独立设备待补。失败现场据说明仍留原机，未随本包提供，不独立归因所有早期超时。B真人体验、C真实收藏、D百家公司仍未由本轮验收；独立Windows同版test4、Apple Silicon亦未测。无需反复运行已通过的macOS全套，后续只补缺口。
+
 ### 2026-11-16 跨设备回传验收更新
 
 macOS Intel（26.7 / x86_64）固定资产 v0.2.0-mvp-test3 的官方 A 自动入口已通过：来源校验、基础回归、干净目录演练、Chrome 合成流程全部退出0，syntheticCorePassed=true，使用 browser-websocket-flat-session。回传ZIP SHA256为32067e3244322a83f89e5baa20d5f38b1497e7e2fa4b8c434ffb457e27c74688；ZIP无损坏，反馈清单全部文件hash一致、缺失为空，原始发布资产SHA256与公开记录一致。Windows独立设备已通过test1的A；test3尚无Windows独立设备回传，不将两种快照表述为同版双系统验收。开发Windows的test3完整包装器已通过，仅为开发设备证据。
