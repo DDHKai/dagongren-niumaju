@@ -30,6 +30,14 @@
 
 ## 最小对话验收
 
+### 事实确认的执行者与范围
+
+事实现在分别保存助手原文核对 `sourceReview` 与本人确认 `confirmation`，各含声明执行者、方式、时间、单条事实范围及历史。工作区 `/api/confirm` 可传 `actor=assistant, method=source-check`：只留原文核对记录，不把未确认事实升为 candidate-confirmed，不满足正向能力判断门槛。取得本人对明确事实范围的确认后，传 `actor=candidate`，方式为 `explicit-fact-selection` 或 `explicit-scoped-batch`。批量范围以显式factIds记录，不能把校对映射、部署或导出许可视为确认。
+
+CLI同样支持：`python scripts/resume_workspace.py confirm --output "候选版本目录" --fact-id "实际事实ID" --actor assistant --method source-check`。本人按范围确认后改用candidate与对应方式。默认candidate仅兼容旧调用，不代表身份校验；记录 identityVerified=false，执行者声明可被错误调用，系统无法证明本人在场。助手不得因默认值就替本人确认。
+
+旧事实没有confirmation记录时显示“历史确认，确认方式未记录”，不自动补造时间、执行者或证据，也不批量撤销历史。助手核对原文不能抵消或撤销此前错误的本人确认；发现误确认必须按新版本纠正流程处理。确认记录参与事实hash，新记录使旧能力／结果失效，需要重算；不自动继承旧选择。当前报告仍可能保留旧状态，不能仅凭candidate-confirmed断言已完成可信身份认证。
+
 用户只需交给助手仓库链接、回答简历与条件问题，并在需要时本人登录。验收看是否产生同一轮次的预筛、能力复核、公司记录与内置结果导出，重点候选能回到原文；未做环节必须显式列出。测试记录用户介入位置、助手额外脚本、卡点与实际耗时。不得用成功部署或另制HTML替代完整任务验收。
 
 main开发能力，尚未纳入既有合成实验Release。仅本机运行，没有模型、岗位采集、财报查询或投递。

@@ -3,6 +3,7 @@ import argparse
 import hashlib
 import json
 import secrets
+from datetime import datetime,timezone
 from pathlib import Path
 from candidate_facts import extract_facts
 
@@ -54,7 +55,10 @@ def create(source,conditions_path,output):
         'facts':len(facts),'networkCalls':0,'externalActions':0,'stage':'intake-awaiting-review'})
     return {'stage':'intake-awaiting-review','facts':len(facts),'networkCalls':0,'externalActions':0}
 
-def confirm(output,ids):
+def confirm(output,ids,actor='candidate',method='explicit-fact-selection'):
+    if actor not in ('candidate','assistant') or method not in ('explicit-fact-selection','explicit-scoped-batch','source-check'):
+        raise ValueError('Explicit confirmation actor and supported method required')
+    if actor=='assistant' and method!='source-check':raise ValueError('Assistant can only record source review')
     output=Path(output)
     manifest=json.loads((output/'manifest.json').read_text(encoding='utf-8'))
     resume=json.loads((output/'resume.json').read_text(encoding='utf-8'))
@@ -68,17 +72,24 @@ def confirm(output,ids):
     available={f['id'] for f in data['facts']}
     if not ids or not set(ids)<=available:raise ValueError('Explicit known fact IDs required')
     for f in data['facts']:
-        if f['id'] in ids:f['status']='candidate-confirmed'
+        if f['id'] in ids:
+            event={'actorDeclared':actor,'method':method,'recordedAt':datetime.now(timezone.utc).isoformat(),
+                   'scope':'this-fact','identityVerified':False}
+            f.setdefault('reviewHistory',[]).append(event)
+            if actor=='candidate':
+                f['status']='candidate-confirmed';f['confirmation']=event
+            else:f['sourceReview']=event
     save(output/'facts.json',data)
     return {'confirmed':sum(f['status']=='candidate-confirmed' for f in data['facts']),
-        'meaning':'User-confirmed source statement; not independently verified employment evidence'}
+        'meaning':('Assistant source review only; candidate confirmation unchanged' if actor=='assistant' else 'Declared candidate confirmation; identity and employment not independently verified')}
 
 def main():
     p=argparse.ArgumentParser();sub=p.add_subparsers(dest='command',required=True)
     q=sub.add_parser('create');q.add_argument('--resume',type=Path,required=True);q.add_argument('--conditions',type=Path,required=True);q.add_argument('--output',type=Path,required=True)
     q=sub.add_parser('confirm');q.add_argument('--output',type=Path,required=True);q.add_argument('--fact-id',action='append',required=True)
+    q.add_argument('--actor',choices=['candidate','assistant'],default='candidate');q.add_argument('--method',choices=['explicit-fact-selection','explicit-scoped-batch','source-check'],default='explicit-fact-selection')
     a=p.parse_args()
-    try:r=create(a.resume,a.conditions,a.output) if a.command=='create' else confirm(a.output,a.fact_id)
+    try:r=create(a.resume,a.conditions,a.output) if a.command=='create' else confirm(a.output,a.fact_id,a.actor,a.method)
     except (ValueError,OSError,KeyError,TypeError):p.exit(1,'Intake failed: check input format, evidence integrity or output directory; raw personal content is not printed.\n')
     print(json.dumps(r,ensure_ascii=False,indent=2))
 

@@ -19,6 +19,19 @@ class IntakeTests(unittest.TestCase):
     def test_output_not_overwritten(self):
         create(self.resume,self.conditions,self.output)
         with self.assertRaises(ValueError):create(self.resume,self.conditions,self.output)
+    def test_assistant_review_never_confirms_candidate(self):
+        create(self.resume,self.conditions,self.output)
+        p=self.output/'facts.json';fact=json.loads(p.read_text(encoding='utf-8'))['facts'][0]
+        confirm(self.output,[fact['id']],'assistant','source-check')
+        f=json.loads(p.read_text(encoding='utf-8'))['facts'][0]
+        self.assertEqual(f['status'],'candidate-unconfirmed')
+        self.assertNotIn('confirmation',f)
+        self.assertEqual(f['sourceReview']['actorDeclared'],'assistant')
+        confirm(self.output,[fact['id']],'candidate','explicit-scoped-batch')
+        f=json.loads(p.read_text(encoding='utf-8'))['facts'][0]
+        self.assertEqual(f['confirmation']['method'],'explicit-scoped-batch')
+        self.assertFalse(f['confirmation']['identityVerified'])
+        self.assertEqual(len(f['reviewHistory']),2)
     def test_tampered_fact_rejected(self):
         create(self.resume,self.conditions,self.output)
         p=self.output/'facts.json';d=json.loads(p.read_text(encoding='utf-8'));d['facts'][0]['quote']='invented';p.write_text(json.dumps(d),encoding='utf-8')

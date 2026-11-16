@@ -261,7 +261,7 @@ class Workspace:
         return self.state(payload['id'])
     def confirm(self,payload):
         p=self.folder(payload['id']);meta=json.loads((p/'case.json').read_text(encoding='utf-8'))
-        confirm(p/meta['versions'][-1],payload['factIds'])
+        confirm(p/meta['versions'][-1],payload['factIds'],payload.get('actor','candidate'),payload.get('method','explicit-fact-selection'))
         return self.state(payload['id'])
 
 class Handler(BaseHTTPRequestHandler):
