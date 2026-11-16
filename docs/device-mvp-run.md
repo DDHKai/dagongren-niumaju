@@ -1,19 +1,19 @@
 # 可转发：Windows／macOS 收藏MVP测试与回传
 
-请测试仓库 **DDHKai/dagongren-qiuzhi** 的固定快照 **v0.2.0-mvp-test2**，应用版本 **0.2.0-experiment**。这是预发布验收，不是正式上线证明。Windows和macOS分别用真实设备执行；无对应系统就写未测试，不模拟冒充。iPhone/iOS不在本轮范围。不要用旧test2或滚动main。
+请测试仓库 **DDHKai/dagongren-qiuzhi** 的固定快照 **v0.2.0-mvp-test3**，应用版本 **0.2.0-experiment**。这是预发布验收，不是正式上线证明。Windows和macOS分别用真实设备执行；无对应系统就写未测试，不模拟冒充。iPhone/iOS不在本轮范围。不要用旧test2或滚动main。
 
 ## 一、下载正确版本
 
-打开[本轮Release](https://github.com/DDHKai/dagongren-qiuzhi/releases/tag/v0.2.0-mvp-test2)，下载两个附件：
+打开[本轮Release](https://github.com/DDHKai/dagongren-qiuzhi/releases/tag/v0.2.0-mvp-test3)，下载两个附件：
 
 - `dagongren-0.2.0-experiment.zip`
 - `dagongren-0.2.0-experiment.zip.sha256`
 
-直接下载：[ZIP](https://github.com/DDHKai/dagongren-qiuzhi/releases/download/v0.2.0-mvp-test2/dagongren-0.2.0-experiment.zip)、[SHA256](https://github.com/DDHKai/dagongren-qiuzhi/releases/download/v0.2.0-mvp-test2/dagongren-0.2.0-experiment.zip.sha256)。**不要点GitHub自动生成的“Source code (zip)”**：本轮附件另有MANIFEST，测试工具会核对源码、清单和ZIP三者一致。
+直接下载：[ZIP](https://github.com/DDHKai/dagongren-qiuzhi/releases/download/v0.2.0-mvp-test3/dagongren-0.2.0-experiment.zip)、[SHA256](https://github.com/DDHKai/dagongren-qiuzhi/releases/download/v0.2.0-mvp-test3/dagongren-0.2.0-experiment.zip.sha256)。**不要点GitHub自动生成的“Source code (zip)”**：本轮附件另有MANIFEST，测试工具会核对源码、清单和ZIP三者一致。
 
 Windows下载、源码、结果和新建虚拟环境放D盘或E盘，不下载到C盘。建议全新带空格目录，如`D:\MVP Test1\`；macOS也使用全新带空格目录。不要覆盖旧部署、不复制旧venv或浏览器配置。解压后进入`dagongren-experiment`目录，应该同时看到VERSION、TEST_SNAPSHOT、MANIFEST.json和scripts。
 
-确认VERSION为0.2.0-experiment、TEST_SNAPSHOT为v0.2.0-mvp-test2。保留原始ZIP和校验文件，测试时传给脚本，不重新压一个包冒充下载物。
+确认VERSION为0.2.0-experiment、TEST_SNAPSHOT为v0.2.0-mvp-test3。保留原始ZIP和校验文件，测试时传给脚本，不重新压一个包冒充下载物。
 
 ## 二、环境要求与边界
 
@@ -108,13 +108,13 @@ macOS的Chrome可执行文件是`/Applications/Google Chrome.app/Contents/MacOS/
 Windows：
 
 ```powershell
-& $TestPython scripts/package_device_feedback.py --results test-results --output "Windows-mvp-test2-results.zip" --reviewed
+& $TestPython scripts/package_device_feedback.py --results test-results --output "Windows-mvp-test3-results.zip" --reviewed
 ```
 
 macOS：
 
 ```sh
-"$TEST_PYTHON" scripts/package_device_feedback.py --results test-results --output "macOS-mvp-test2-results.zip" --reviewed
+"$TEST_PYTHON" scripts/package_device_feedback.py --results test-results --output "macOS-mvp-test3-results.zip" --reviewed
 ```
 
 请回传对应系统ZIP及其.zip.sha256。打包器只选诊断、合成报告、已审阅PNG和人工说明，包含文件hash及缺失清单，不上传；排除RAW-PRIVATE和所有工作区/Chrome数据。正则检查不是完整匿名保证，`--reviewed`表示你确实人工核对过。

@@ -45,7 +45,7 @@ def source_check(root,archive):
                 if safe and json.loads(z.read('dagongren-experiment/MANIFEST.json'))==manifest:
                     result['archiveLayoutMatches']=all(hashlib.sha256(z.read('dagongren-experiment/'+name)).hexdigest()==manifest.get(name) for name in PUBLIC)
         except (BadZipFile,KeyError,ValueError):pass
-    result['passed']=result['manifestPresent'] and not result['fileMismatches'] and result['archiveChecksumMatch'] and result['archiveLayoutMatches'] and result['version']=='0.2.0-experiment' and result['snapshot']=='v0.2.0-mvp-test1'
+    result['passed']=result['manifestPresent'] and not result['fileMismatches'] and result['archiveChecksumMatch'] and result['archiveLayoutMatches'] and bool(re.fullmatch(r'\d+\.\d+\.\d+-experiment',result['version'])) and bool(re.fullmatch(re.escape('v'+result['version'].split('-')[0])+r'-mvp-test[1-9]\d*',result['snapshot']))
     return result
 
 def main():

@@ -20,7 +20,7 @@ def pack(root,output,reviewed):
             text=file.read_text(encoding='utf-8-sig')
             for pattern in (r'[A-Za-z]:[\\/]Users[\\/][^\\/\s]+',r'/Users/[^/\s]+',r'(?<!\d)1[3-9]\d{9}(?!\d)',r'\b(?:gh[pousr]_|sk-)[A-Za-z0-9_-]{16,}',r'securityId='):
                 if re.search(pattern,text):raise ValueError('Possible private content: '+file.name+'; review locally, never print matching content')
-    manifest={'schemaVersion':1,'snapshot':'v0.2.0-mvp-test1','humanReviewAcknowledged':True,'files':{str(p.relative_to(root)).replace('\\','/'):hashlib.sha256(p.read_bytes()).hexdigest() for p in chosen},'missingFiles':[n for n in FILES if not (root/n).exists()],'limitations':'Allowlist/regex cannot certify anonymity; human review remains required. Missing files do not imply PASS.'}
+    manifest={'schemaVersion':1,'snapshot':(Path(__file__).resolve().parents[1]/'TEST_SNAPSHOT').read_text(encoding='utf-8').strip(),'humanReviewAcknowledged':True,'files':{str(p.relative_to(root)).replace('\\','/'):hashlib.sha256(p.read_bytes()).hexdigest() for p in chosen},'missingFiles':[n for n in FILES if not (root/n).exists()],'limitations':'Allowlist/regex cannot certify anonymity; human review remains required. Missing files do not imply PASS.'}
     output.parent.mkdir(parents=True,exist_ok=True)
     with ZipFile(output,'x',ZIP_DEFLATED) as z:
         for file in chosen:z.write(file,'device-results/'+file.relative_to(root).as_posix())

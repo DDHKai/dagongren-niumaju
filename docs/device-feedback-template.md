@@ -3,7 +3,7 @@
 不要删除失败或将未执行写成通过。机器姓名、完整私人路径、真实账号和履历不写入本文件。
 
 - 测试系统：待填写 Windows / macOS；另一系统没有则写“未测试”。
-- 版本：0.2.0-experiment；快照：v0.2.0-mvp-test1。
+- 版本：0.2.0-experiment；快照：填写 TEST_SNAPSHOT 实际值。
 - 来源：Release附件地址；ZIP SHA256见source-check.json。
 - Python来源：待填写 官方独立安装 / 官方嵌入包 / 工具托管 / 其他；不得猜测。
 - 运行时是否依赖Windows C盘：待填写；源码在D盘不等于运行时在D盘。

@@ -4,7 +4,7 @@
 
 历史桌面合成发布：[v0.1.1-desktop-experiment](https://github.com/DDHKai/dagongren-qiuzhi/releases/tag/v0.1.1-desktop-experiment)。旧版范围见[发布范围、安装与限制](docs/desktop-release.md)。
 
-当前跨设备测试快照为 **v0.2.0-mvp-test2**（应用版本0.2.0-experiment）；请按[本轮Windows／macOS下载、部署、测试与回传指令](docs/device-mvp-run.md)执行。使用新Release附件，不与旧v0.1.1-test2或滚动main混用。
+当前跨设备测试快照为 **v0.2.0-mvp-test3**（应用版本0.2.0-experiment）；请按[本轮Windows／macOS下载、部署、测试与回传指令](docs/device-mvp-run.md)执行。使用新Release附件，不与旧v0.1.1-test2或滚动main混用。
 
 帮助有工作经验的求职者，将经历、岗位需求和公司证据放在一起，做有依据的选择。
 
@@ -40,7 +40,7 @@ main新增真实输入基础模块：`scripts/resume_workspace.py`可本地导�
 
 ## 本轮MVP测试版
 
-下载[v0.2.0-mvp-test2 Release附件](https://github.com/DDHKai/dagongren-qiuzhi/releases/tag/v0.2.0-mvp-test2)，按[完整测试指令](docs/device-mvp-run.md)校验、解压到全新目录。真实工作区使用`start-windows.bat --workspace`或`sh ./start-macos.command --workspace`。需要Python 3.10+、Node 22+和已安装Chrome；PDF另需可选依赖。不提供模型自动语义评审，不默认授权真实收藏。
+下载[v0.2.0-mvp-test3 Release附件](https://github.com/DDHKai/dagongren-qiuzhi/releases/tag/v0.2.0-mvp-test3)，按[完整测试指令](docs/device-mvp-run.md)校验、解压到全新目录。真实工作区使用`start-windows.bat --workspace`或`sh ./start-macos.command --workspace`。需要Python 3.10+、Node 22+和已安装Chrome；PDF另需可选依赖。不提供模型自动语义评审，不默认授权真实收藏。
 
 ## 历史合成演示
 

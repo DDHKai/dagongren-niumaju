@@ -13,11 +13,11 @@ class DeviceToolsTests(unittest.TestCase):
         root=Path(__file__).resolve().parents[1]/'data/test-tmp';root.mkdir(parents=True,exist_ok=True)
         self.temp=tempfile.TemporaryDirectory(dir=root);self.root=Path(self.temp.name)
     def tearDown(self):self.temp.cleanup()
-    def fixture(self):
+    def fixture(self, snapshot='v0.2.0-mvp-test1'):
         source=self.root/'source';source.mkdir();manifest={}
         for name in PUBLIC:
             p=source/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(b'')
-        (source/'VERSION').write_text('0.2.0-experiment',encoding='utf-8');(source/'TEST_SNAPSHOT').write_text('v0.2.0-mvp-test1',encoding='utf-8')
+        (source/'VERSION').write_text('0.2.0-experiment',encoding='utf-8');(source/'TEST_SNAPSHOT').write_text(snapshot,encoding='utf-8')
         manifest={name:hashlib.sha256((source/name).read_bytes()).hexdigest() for name in PUBLIC}
         (source/'MANIFEST.json').write_text(json.dumps(manifest),encoding='utf-8');archive=self.root/'source.zip'
         with ZipFile(archive,'w') as z:
@@ -27,6 +27,10 @@ class DeviceToolsTests(unittest.TestCase):
     def test_archive_manifest_and_extracted_source_must_match(self):
         source,archive=self.fixture();self.assertTrue(source_check(source,archive)['passed'])
         (source/'README.md').write_text('changed',encoding='utf-8');self.assertFalse(source_check(source,archive)['passed'])
+    def test_future_snapshot_passes(self):
+        source,archive=self.fixture('v0.2.0-mvp-test3');self.assertTrue(source_check(source,archive)['passed'])
+    def test_wrong_version_rejected(self):
+        source,archive=self.fixture('v9.0.0-mvp-test3');self.assertFalse(source_check(source,archive)['passed'])
     def test_checksum_mismatch_not_passed(self):
         source,archive=self.fixture();archive.with_suffix('.zip.sha256').write_text('0'*64,encoding='utf-8');self.assertFalse(source_check(source,archive)['passed'])
     def test_home_and_project_paths_redacted(self):
