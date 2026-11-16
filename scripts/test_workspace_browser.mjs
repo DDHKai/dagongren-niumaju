@@ -35,18 +35,24 @@ server.serve_forever()
 const server=spawn(python,[fixture,join(root,'scripts'),join(dir,'private')],{cwd:root,windowsHide:true,stdio:['ignore','pipe','pipe']});
 const url=await new Promise((res,rej)=>{let s='';const timer=setTimeout(()=>rej(Error('server timeout')),15000);server.stdout.on('data',b=>{s+=b;const m=s.match(/http:\/\/127\.0\.0\.1:\d+/);if(m){clearTimeout(timer);res(m[0])}});server.on('exit',()=>{clearTimeout(timer);rej(Error('server exited'))})});
 const browser=spawn(chrome,['--headless=new','--remote-debugging-port=0','--user-data-dir='+join(dir,'chrome'),'--no-first-run','--no-default-browser-check','about:blank'],{windowsHide:true,stdio:'ignore'});
-let ws;const pending=new Map();let seq=0;
+let ws;const pending=new Map();let seq=0;let pageSession;
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
 try{
  let port;
  for(let i=0;i<100;i++){try{port=Number((await readFile(join(dir,'chrome/DevToolsActivePort'),'utf8')).split('\n')[0]);break}catch{}await pause(100)}
  assert.ok(port,'Chrome CDP started');
  const tabs=await(await fetch('http://127.0.0.1:'+port+'/json/list')).json();
- ws=new WebSocket(tabs.find(t=>t.type==='page').webSocketDebuggerUrl);
+ const page=tabs.find(t=>t.type==='page');assert.ok(page,'Chrome page target exists');
+ const endpoint=await(await fetch('http://127.0.0.1:'+port+'/json/version')).json();
+ // Use the browser endpoint and a flattened target session. Some macOS Chrome
+ // builds accept a page WebSocket but never answer commands sent through it.
+ ws=new WebSocket(endpoint.webSocketDebuggerUrl);
  await new Promise((res,rej)=>{ws.onopen=res;ws.onerror=rej});
  ws.onmessage=e=>{const m=JSON.parse(e.data),p=pending.get(m.id);if(p){clearTimeout(p.timer);pending.delete(m.id);m.error?p.reject(Error(m.error.message)):p.resolve(m.result)}};
- function call(method,params={}){return new Promise((resolve,reject)=>{let id=++seq;const timer=setTimeout(()=>{pending.delete(id);reject(Error('CDP timeout'))},15000);pending.set(id,{resolve,reject,timer});ws.send(JSON.stringify({id,method,params}))})}
+ function call(method,params={}){return new Promise((resolve,reject)=>{let id=++seq;const timer=setTimeout(()=>{pending.delete(id);reject(Error('CDP timeout: '+method))},15000);pending.set(id,{resolve,reject,timer});const message={id,method,params};if(pageSession&&!method.startsWith('Browser.')&&!method.startsWith('Target.'))message.sessionId=pageSession;ws.send(JSON.stringify(message))})}
  const browserInfo=await call('Browser.getVersion');
+ pageSession=(await call('Target.attachToTarget',{targetId:page.id,flatten:true})).sessionId;
+ assert.ok(pageSession,'Chrome page session attached');
  async function evaluate(expression){const r=await call('Runtime.evaluate',{expression,awaitPromise:true,returnByValue:true});if(r.exceptionDetails)throw Error('Browser expression failed');return r.result.value}
  await call('Page.navigate',{url});
  for(let i=0;i<50;i++){if(await evaluate("!!document.getElementById('file')"))break;await pause(100)}
@@ -177,7 +183,7 @@ try{
  assert.equal(await evaluate("document.querySelectorAll('article').length"),1);
  assert.equal(await evaluate("document.documentElement.scrollWidth>innerWidth"),false);
  const exportShot=await call('Page.captureScreenshot',{format:'png'});await writeFile(join(dir,'result-export.png'),Buffer.from(exportShot.data,'base64'));
- await writeFile(join(dir,'browser-summary.json'),JSON.stringify({schemaVersion:1,status:'passed',syntheticOnly:true,favoriteWorkerDouble:true,realBossTouched:false,browser:browserInfo.product,
+ await writeFile(join(dir,'browser-summary.json'),JSON.stringify({schemaVersion:1,status:'passed',syntheticOnly:true,favoriteWorkerDouble:true,realBossTouched:false,browser:browserInfo.product,cdpTransport:'browser-websocket-flat-session',
   coverage:['TXT/DOCX intake and source mapping','explicit fact confirmation','prescreen unknown separation','ability human review and staleness','company unknown persistence','personal selection and reload','account confirmation and favorite authorization with worker double','JSON/HTML actual download and offline render','stale result export block'],
   limitation:'Not real BOSS collection/favorite validation, not manual experience or all-browser compatibility.'},null,2));
  console.log('PASS real Chrome: resume/market/review, result selection, favorite account binding/authorization/execution/reload with a synthetic worker double, disabled contact, private JSON/HTML downloads and stale-result blocking.');

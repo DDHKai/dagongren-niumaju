@@ -1,19 +1,19 @@
 # 可转发：Windows／macOS 收藏MVP测试与回传
 
-请测试仓库 **DDHKai/dagongren-qiuzhi** 的固定快照 **v0.2.0-mvp-test1**，应用版本 **0.2.0-experiment**。这是预发布验收，不是正式上线证明。Windows和macOS分别用真实设备执行；无对应系统就写未测试，不模拟冒充。iPhone/iOS不在本轮范围。不要用旧test2或滚动main。
+请测试仓库 **DDHKai/dagongren-qiuzhi** 的固定快照 **v0.2.0-mvp-test2**，应用版本 **0.2.0-experiment**。这是预发布验收，不是正式上线证明。Windows和macOS分别用真实设备执行；无对应系统就写未测试，不模拟冒充。iPhone/iOS不在本轮范围。不要用旧test2或滚动main。
 
 ## 一、下载正确版本
 
-打开[本轮Release](https://github.com/DDHKai/dagongren-qiuzhi/releases/tag/v0.2.0-mvp-test1)，下载两个附件：
+打开[本轮Release](https://github.com/DDHKai/dagongren-qiuzhi/releases/tag/v0.2.0-mvp-test2)，下载两个附件：
 
 - `dagongren-0.2.0-experiment.zip`
 - `dagongren-0.2.0-experiment.zip.sha256`
 
-直接下载：[ZIP](https://github.com/DDHKai/dagongren-qiuzhi/releases/download/v0.2.0-mvp-test1/dagongren-0.2.0-experiment.zip)、[SHA256](https://github.com/DDHKai/dagongren-qiuzhi/releases/download/v0.2.0-mvp-test1/dagongren-0.2.0-experiment.zip.sha256)。**不要点GitHub自动生成的“Source code (zip)”**：本轮附件另有MANIFEST，测试工具会核对源码、清单和ZIP三者一致。
+直接下载：[ZIP](https://github.com/DDHKai/dagongren-qiuzhi/releases/download/v0.2.0-mvp-test2/dagongren-0.2.0-experiment.zip)、[SHA256](https://github.com/DDHKai/dagongren-qiuzhi/releases/download/v0.2.0-mvp-test2/dagongren-0.2.0-experiment.zip.sha256)。**不要点GitHub自动生成的“Source code (zip)”**：本轮附件另有MANIFEST，测试工具会核对源码、清单和ZIP三者一致。
 
 Windows下载、源码、结果和新建虚拟环境放D盘或E盘，不下载到C盘。建议全新带空格目录，如`D:\MVP Test1\`；macOS也使用全新带空格目录。不要覆盖旧部署、不复制旧venv或浏览器配置。解压后进入`dagongren-experiment`目录，应该同时看到VERSION、TEST_SNAPSHOT、MANIFEST.json和scripts。
 
-确认VERSION为0.2.0-experiment、TEST_SNAPSHOT为v0.2.0-mvp-test1。保留原始ZIP和校验文件，测试时传给脚本，不重新压一个包冒充下载物。
+确认VERSION为0.2.0-experiment、TEST_SNAPSHOT为v0.2.0-mvp-test2。保留原始ZIP和校验文件，测试时传给脚本，不重新压一个包冒充下载物。
 
 ## 二、环境要求与边界
 
@@ -108,13 +108,13 @@ macOS的Chrome可执行文件是`/Applications/Google Chrome.app/Contents/MacOS/
 Windows：
 
 ```powershell
-& $TestPython scripts/package_device_feedback.py --results test-results --output "Windows-mvp-test1-results.zip" --reviewed
+& $TestPython scripts/package_device_feedback.py --results test-results --output "Windows-mvp-test2-results.zip" --reviewed
 ```
 
 macOS：
 
 ```sh
-"$TEST_PYTHON" scripts/package_device_feedback.py --results test-results --output "macOS-mvp-test1-results.zip" --reviewed
+"$TEST_PYTHON" scripts/package_device_feedback.py --results test-results --output "macOS-mvp-test2-results.zip" --reviewed
 ```
 
 请回传对应系统ZIP及其.zip.sha256。打包器只选诊断、合成报告、已审阅PNG和人工说明，包含文件hash及缺失清单，不上传；排除RAW-PRIVATE和所有工作区/Chrome数据。正则检查不是完整匿名保证，`--reviewed`表示你确实人工核对过。
@@ -124,6 +124,14 @@ macOS：
 请在反馈首句写：**系统／架构、A自动检查是否通过、B人工体验是否完成、C真实收藏是否测、D百家公司是否测**。这四项分别判断，不合成一个“全部通过”。测试结束停掉服务及本次专用Chrome。
 
 ## 本地预检记录与判定边界
+
+### 2026-11-14 回传结论与补测边界
+
+固定资产 `v0.2.0-mvp-test1` 的 Windows 来源校验、基础检查、干净目录演练与官方 Chrome 合成检查通过；macOS 来源校验及前两项通过，官方 Chrome 检查因 CDP timeout 未通过。两端另行执行的页面操作均为自动化，不等于真人体验。macOS 使用工具托管 Python，独立运行时尚未验收；两端均未完成本轮真实收藏、百家公司质量验证及可选 PDF 导入验证。
+
+后续浏览器测试改为连接 browser WebSocket，通过 `Target.attachToTarget(flatten=true)` 创建页面会话：`Browser.*` 命令保持在浏览器层，页面命令带 `sessionId`，超时信息包含具体命令。原有业务断言和15秒命令超时保留，不以跳过断言解决兼容性问题。此改动不改变已冻结的 test1 标签或资产，也不能据此把 test1 的 macOS 失败改写为通过。
+
+macOS 补测必须使用包含该修复的下一固定 Release 资产及同名 SHA256 文件，不能在 test1 解压目录覆盖脚本后声称原版通过。继续执行本文 A 的完整命令，使用全新结果目录；回传 `source-check.json`、`device-summary.json`、`browser-check.txt`、`browser-summary.json`、合成导出及打包清单。通过时应同时看到 `syntheticCorePassed=true` 与 `cdpTransport=browser-websocket-flat-session`；失败时保留具体命令超时和首次现场。使用独立安装的 Python 3.10+ 补运行时验证，托管解释器结果单独记录。真人体验与 C/D 仍分别标记，不合并判定。
 
 2026-11-12已在开发设备从新ZIP解压至带空格目录，完整演练来源校验、基础回归、二次干净目录检查、无头Chrome合成流程和反馈打包，并核对合成市场手工指令所用的3岗位/2公司、三组各1、单项周末取舍新增1家公司及过期保护。返回文本和截图已检查为合成资料；原始stdout/stderr按字节单独留在RAW-PRIVATE，共享副本规范为UTF-8换行，不改变退出码。
 
