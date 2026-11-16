@@ -191,9 +191,31 @@ def closure_audit(folder):
             'limitations':['Counts only; no shortlist saved, no new report persisted, no export or platform action executed.',
                            'Coverage is distinct platform company IDs, not independently verified legal identities.']}
 
+def verify_saved_export(path,expected_sha256):
+    if not re.fullmatch(r'[a-fA-F0-9]{64}',expected_sha256):raise ValueError('Expected SHA256 required')
+    path=Path(path)
+    if not path.is_file():return {'status':'saved-file-not-found','matchesPrepared':False}
+    digest=hashlib.sha256();size=0
+    with path.open('rb') as stream:
+        for chunk in iter(lambda:stream.read(1024*1024),b''):
+            size+=len(chunk);digest.update(chunk)
+    actual=digest.hexdigest();matches=actual==expected_sha256.lower()
+    return {'status':'saved-content-verified' if matches else 'saved-content-mismatch',
+            'matchesPrepared':matches,'sha256':actual,'bytes':size,
+            'meaning':'Local bytes checked only; not current job status, report freshness, identity or recommendation quality.'}
+
 if __name__=='__main__':
     import argparse
     parser=argparse.ArgumentParser(description='Read-only result closure readiness; keep output private.')
-    parser.add_argument('--audit-case',type=Path,required=True)
+    mode=parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument('--audit-case',type=Path)
+    mode.add_argument('--verify-export',type=Path)
+    parser.add_argument('--expected-sha256')
     args=parser.parse_args()
+    if args.verify_export:
+        if not args.expected_sha256:parser.error('--expected-sha256 required')
+        try:result=verify_saved_export(args.verify_export,args.expected_sha256)
+        except (ValueError,OSError):parser.exit(2,'Cannot verify saved export; check hash and file access.\n')
+        print(json.dumps(result,ensure_ascii=False,indent=2))
+        raise SystemExit(0 if result['matchesPrepared'] else 1)
     print(json.dumps(closure_audit(args.audit_case),ensure_ascii=False,indent=2))

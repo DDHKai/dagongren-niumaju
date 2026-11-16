@@ -5,10 +5,20 @@ from pathlib import Path
 import tempfile
 import unittest
 from workspace_server import Workspace
-from result_report import generate,choose,reorder,summary,html_report,size,closure_audit
+from result_report import generate,choose,reorder,summary,html_report,size,closure_audit,verify_saved_export
+import hashlib
 from test_prescreen_jobs import job
 
 class ResultTests(unittest.TestCase):
+    def test_saved_export_verification_detects_changed_and_missing_bytes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            p=Path(directory)/'report.html';data='合成导出\n'.encode();p.write_bytes(data)
+            expected=hashlib.sha256(data).hexdigest()
+            self.assertTrue(verify_saved_export(p,expected)['matchesPrepared'])
+            p.write_bytes(data+b'changed')
+            self.assertFalse(verify_saved_export(p,expected)['matchesPrepared'])
+            self.assertEqual(verify_saved_export(p.with_name('missing'),expected)['status'],'saved-file-not-found')
+            with self.assertRaises(ValueError):verify_saved_export(p,'invalid')
     def setUp(self):
         parent=Path(__file__).resolve().parents[1]/'data/test-tmp';parent.mkdir(parents=True,exist_ok=True)
         self.temp=tempfile.TemporaryDirectory(dir=parent);self.w=Workspace(Path(self.temp.name));self.c=self.w.upload({'kind':'.txt','data':base64.b64encode('负责示例报表整理及复盘'.encode()).decode(),'conditions':{'must':[],'prefer':[],'ignore':[]}})

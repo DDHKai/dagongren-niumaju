@@ -177,7 +177,9 @@ class Workspace:
         kind=payload['format']
         if kind not in ('json','html'):raise ValueError('Unsupported export')
         content=json.dumps(r,ensure_ascii=False,indent=2) if kind=='json' else html_report(r)
-        return {'filename':'private-job-report.'+kind,'content':content,'contentType':'application/json' if kind=='json' else 'text/html','status':'export-prepared-not-save-confirmed'}
+        encoded=content.encode('utf-8')
+        return {'filename':'private-job-report.'+kind,'content':content,'contentType':'application/json' if kind=='json' else 'text/html','status':'export-prepared-not-save-confirmed',
+                'sha256':hashlib.sha256(encoded).hexdigest(),'bytes':len(encoded),'encoding':'utf-8','reportVersion':payload['reportVersion']}
     def company_context(self,ident,company_id):
         p=self.folder(ident);meta=json.loads((p/'case.json').read_text(encoding='utf-8'))
         market=meta['marketReports'][-1];data=json.loads((p/market/'checkpoint.json').read_text(encoding='utf-8'))
