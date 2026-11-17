@@ -2,7 +2,7 @@
 
 当前实验版：0.2.0-experiment（版本入口VERSION）。
 
-历史桌面合成发布：[v0.1.1-desktop-experiment](https://github.com/DDHKai/dagongren-qiuzhi/releases/tag/v0.1.1-desktop-experiment)。旧版范围见[发布范围、安装与限制](docs/desktop-release.md)。
+历史桌面合成发布：[v0.1.1-desktop-experiment](https://github.com/DDHKai/dagongren-niumaju/releases/tag/v0.1.1-desktop-experiment)。旧版范围见[发布范围、安装与限制](docs/desktop-release.md)。
 
 当前跨设备测试快照为 **v0.2.0-mvp-test4**（应用版本0.2.0-experiment）；请按[本轮Windows／macOS下载、部署、测试与回传指令](docs/device-mvp-run.md)执行。使用新Release附件，不与旧v0.1.1-test2或滚动main混用。
 
@@ -11,6 +11,14 @@
 **通过对话使用：**将本仓库交给具备本地执行能力的助手，按[助手入口与执行留证顺序](docs/private-workspace.md)下载固定Release、确认简历与条件、引导本人登录，并保存可追溯的复核和结果导出。用户不必逐项操作开发工作区。当前仍需外部助手编排，不提供内置大模型或一键自动匹配；客户端能力须先确认。main文档更新不回写已冻结的test3资产。
 
 **历史合成发布0.1.1-experiment：下述旧实验范围不代表新MVP能力。** 可运行的是合成岗位交互页和独立证据模块；不登录BOSS、不调用模型、不采集真实岗位、不投递。已收到Windows与Intel macOS的无头Chrome实机回传，具体环境与未测项见[验收记录](docs/test2-validation.md)。
+
+## 用对话开始
+
+将以下内容交给具备本地文件、命令执行和浏览器操作能力的助手（客户端能力需先确认）：
+
+> 请阅读 https://github.com/DDHKai/dagongren-niumaju ，按项目说明下载明确的固定Release附件及校验文件，部署到新的本地非系统盘目录，不覆盖旧环境。先询问我的简历是否更新、求职方向与硬条件；核对经历与薪资口径，需要登录时由我本人登录专用Chrome。沿同一轮次保留证据、去重与复核，生成项目内置HTML/JSON并核验实际保存；覆盖不足或未知如实说明，不凑名单。收藏须取得具体岗位授权，沟通和投递由我自己执行。不要上传真实履历或凭据。
+
+当前适合外部助手协作的开源试用，不是内置大模型全自动产品。测试版test4仍为固定部署基线，main后续续搜改动尚未进入该资产；不要把两者混称同一版本。已有用户无需因仓库改名重新部署或重新采集；原目录和私人数据保留，Git用户只需更新origin。
 
 ## 当前能力
 
@@ -42,11 +50,11 @@ main新增真实输入基础模块：`scripts/resume_workspace.py`可本地导�
 
 ## 本轮MVP测试版
 
-下载[v0.2.0-mvp-test4 Release附件](https://github.com/DDHKai/dagongren-qiuzhi/releases/tag/v0.2.0-mvp-test4)，按[完整测试指令](docs/device-mvp-run.md)校验、解压到全新目录。真实工作区使用`start-windows.bat --workspace`或`sh ./start-macos.command --workspace`。需要Python 3.10+、Node 22+和已安装Chrome；PDF另需可选依赖。不提供模型自动语义评审，不默认授权真实收藏。
+下载[v0.2.0-mvp-test4 Release附件](https://github.com/DDHKai/dagongren-niumaju/releases/tag/v0.2.0-mvp-test4)，按[完整测试指令](docs/device-mvp-run.md)校验、解压到全新目录。真实工作区使用`start-windows.bat --workspace`或`sh ./start-macos.command --workspace`。需要Python 3.10+、Node 22+和已安装Chrome；PDF另需可选依赖。不提供模型自动语义评审，不默认授权真实收藏。
 
 ## 历史合成演示
 
-[下载旧合成测试快照ZIP](https://github.com/DDHKai/dagongren-qiuzhi/archive/refs/tags/v0.1.1-test2.zip)，解压到新目录。无需模型Key或BOSS账号，不输入个人资料。test2标签不随main更新；T06前置条件修订见main中的测试指令。
+[下载旧合成测试快照ZIP](https://github.com/DDHKai/dagongren-niumaju/archive/refs/tags/v0.1.1-test2.zip)，解压到新目录。无需模型Key或BOSS账号，不输入个人资料。test2标签不随main更新；T06前置条件修订见main中的测试指令。
 
 - 浏览器打开 `web/index.html`，不覆盖启动器测试。
 - 已装Python 3.10+：Windows双击 `start-windows.bat`。

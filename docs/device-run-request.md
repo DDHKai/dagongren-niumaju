@@ -2,9 +2,9 @@
 
 当前收藏MVP测试请使用[本轮指令](device-mvp-run.md)。本页仅保留旧合成版测试记录。
 
-目标仓库DDHKai/dagongren-qiuzhi，测试标签 **v0.1.1-test2**；应用内版本仍为 **0.1.1-experiment**。test2是包含日志核验、MIT和干净包检查的快照标识，不是应用版本升级。不要使用旧v0.1.1-experiment标签或滚动main代替。
+目标仓库DDHKai/dagongren-niumaju，测试标签 **v0.1.1-test2**；应用内版本仍为 **0.1.1-experiment**。test2是包含日志核验、MIT和干净包检查的快照标识，不是应用版本升级。不要使用旧v0.1.1-experiment标签或滚动main代替。
 
-下载：https://github.com/DDHKai/dagongren-qiuzhi/archive/refs/tags/v0.1.1-test2.zip
+下载：https://github.com/DDHKai/dagongren-niumaju/archive/refs/tags/v0.1.1-test2.zip
 
 这是6家合成数据演示，不测试真实简历、BOSS登录、AI或投递。不输入个人资料。Windows与macOS各自执行一次；没有对应系统就写未测试，不模拟冒充。
 

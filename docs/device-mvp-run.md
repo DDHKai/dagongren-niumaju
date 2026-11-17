@@ -1,15 +1,15 @@
 # 可转发：Windows／macOS 收藏MVP测试与回传
 
-请测试仓库 **DDHKai/dagongren-qiuzhi** 的固定快照 **v0.2.0-mvp-test4**，应用版本 **0.2.0-experiment**。这是预发布验收，不是正式上线证明。Windows和macOS分别用真实设备执行；无对应系统就写未测试，不模拟冒充。iPhone/iOS不在本轮范围。不要用旧test2或滚动main。
+请测试仓库 **DDHKai/dagongren-niumaju** 的固定快照 **v0.2.0-mvp-test4**，应用版本 **0.2.0-experiment**。这是预发布验收，不是正式上线证明。Windows和macOS分别用真实设备执行；无对应系统就写未测试，不模拟冒充。iPhone/iOS不在本轮范围。不要用旧test2或滚动main。
 
 ## 一、下载正确版本
 
-打开[本轮Release](https://github.com/DDHKai/dagongren-qiuzhi/releases/tag/v0.2.0-mvp-test4)，下载两个附件：
+打开[本轮Release](https://github.com/DDHKai/dagongren-niumaju/releases/tag/v0.2.0-mvp-test4)，下载两个附件：
 
 - `dagongren-0.2.0-experiment.zip`
 - `dagongren-0.2.0-experiment.zip.sha256`
 
-直接下载：[ZIP](https://github.com/DDHKai/dagongren-qiuzhi/releases/download/v0.2.0-mvp-test4/dagongren-0.2.0-experiment.zip)、[SHA256](https://github.com/DDHKai/dagongren-qiuzhi/releases/download/v0.2.0-mvp-test4/dagongren-0.2.0-experiment.zip.sha256)。**不要点GitHub自动生成的“Source code (zip)”**：本轮附件另有MANIFEST，测试工具会核对源码、清单和ZIP三者一致。
+直接下载：[ZIP](https://github.com/DDHKai/dagongren-niumaju/releases/download/v0.2.0-mvp-test4/dagongren-0.2.0-experiment.zip)、[SHA256](https://github.com/DDHKai/dagongren-niumaju/releases/download/v0.2.0-mvp-test4/dagongren-0.2.0-experiment.zip.sha256)。**不要点GitHub自动生成的“Source code (zip)”**：本轮附件另有MANIFEST，测试工具会核对源码、清单和ZIP三者一致。
 
 Windows下载、源码、结果和新建虚拟环境放D盘或E盘，不下载到C盘。建议全新带空格目录，如`D:\MVP Test1\`；macOS也使用全新带空格目录。不要覆盖旧部署、不复制旧venv或浏览器配置。解压后进入`dagongren-experiment`目录，应该同时看到VERSION、TEST_SNAPSHOT、MANIFEST.json和scripts。
 
