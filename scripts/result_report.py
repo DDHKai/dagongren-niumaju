@@ -153,7 +153,9 @@ def html_report(report):
         for task in report.get('actionObservations',[]):
             if task['jobId']==ident:parts.append('<p>收藏记录：'+e({'confirmed-favorite':'系统已收藏，页面刷新后核实','observed-favorite':'已核实平台收藏状态，仅作观察确认','executing':'执行结果待核实，禁止重复','blocked-before-click':'点击前停止','ready-to-execute':'已核对，尚未点击','authorized':'仅授权，未操作','awaiting-user-action':'历史人工接管，待观察','outcome-unknown':'结果尚未核实','cancelled':'授权撤销'}.get(task['state'],task['state']))+'；沟通和简历投递由本人完成。最后观察时间：'+e(datetime.fromtimestamp(task['observedAt'],timezone.utc).isoformat() if task.get('observedAt') else '无')+'，不是当前状态保证。</p>')
         u=urlsplit(r['sourceUrl'])
-        if u.scheme=='https' and u.hostname=='www.zhipin.com' and re.fullmatch(r'/job_detail/[^/]+\.html',u.path):parts.append('<a rel="noreferrer" href="'+e(r['sourceUrl'])+'">原岗位（打开后仍须刷新核实）</a>')
+        if u.scheme=='https' and u.hostname=='www.zhipin.com' and re.fullmatch(r'/job_detail/[^/]+\.html',u.path):
+            parts.append('<a rel="noreferrer" href="'+e(r['sourceUrl'])+'">自行打开原岗位</a><p>岗位网址：'+e(u.scheme+'://'+u.netloc+u.path)+'</p>')
+            parts.append('<p>是否需要协助收藏？可告诉本地助手“请协助收藏此岗位”，并提供上方网址。离线报告不执行收藏；助手须刷新核对岗位、账号及具体授权范围，操作后核实结果。不沟通、不发送简历。</p>')
         for key,label in [('emphasize','该强调的真实经历'),('verify','最需要核实的问题'),('possibleMismatch','双方可能不匹配之处')]:
             parts.append('<h3>'+label+'</h3>')
             if not r['advice'][key]:parts.append('<p>暂无证据支持的内容，不自动补写</p>')
