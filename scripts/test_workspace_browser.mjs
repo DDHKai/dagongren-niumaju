@@ -133,6 +133,10 @@ try{
  await evaluate("document.getElementById('generateResult').click()");
  for(let i=0;i<100;i++){if(await evaluate("current.resultReport?.jobs.length===1"))break;await pause(100)}
  assert.equal(await evaluate("current.resultSummary.counts.preferred"),0);
+ assert.ok(await evaluate("[...document.querySelectorAll('#resultRows button')].find(b=>b.textContent==='请求协助收藏').disabled"));
+ await evaluate("(()=>{const test=structuredClone(current);test.resultReport.jobs[0].selection={bucket:'tradeoff',selected:false,reason:'synthetic'};renderResults(test)})()");
+ assert.ok(await evaluate("[...document.querySelectorAll('#resultRows button')].find(b=>b.textContent==='请求协助收藏').disabled"));
+ await evaluate("renderResults(current)");
  assert.equal(await evaluate("current.resultReport.coverage.actualCompanies"),1);
  assert.ok(await evaluate("document.getElementById('resultRows').textContent.includes('示例公司')"));
  await evaluate("document.querySelector('#resultRows select').value='reserve';document.querySelector('#resultRows textarea').value='合成测试：任务相交，固定薪资待确认';[...document.querySelectorAll('#resultRows button')].find(b=>b.textContent==='确认并保存本轮选择').click()");
@@ -179,6 +183,7 @@ try{
  await evaluate("document.getElementById('generateAbility').click()");
  for(let i=0;i<100;i++){if(await evaluate("document.getElementById('exportResultJson').disabled"))break;await pause(100)}
  assert.ok(await evaluate("document.getElementById('exportResultJson').disabled"));
+ assert.ok(await evaluate("[...document.querySelectorAll('#resultRows button')].find(b=>b.textContent==='请求协助收藏').disabled"));
  await call('Page.navigate',{url:pathToFileURL(join(downloadDir,'private-job-report.html')).href});await pause(500);
  assert.equal(await evaluate("document.querySelectorAll('article').length"),1);
  assert.equal(await evaluate("document.documentElement.scrollWidth>innerWidth"),false);

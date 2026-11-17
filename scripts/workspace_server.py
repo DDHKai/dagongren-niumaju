@@ -2,6 +2,7 @@
 import argparse
 import base64
 import hashlib
+import os
 import json
 from pathlib import Path
 import re
@@ -24,7 +25,13 @@ from action_ledger import Ledger
 
 class Workspace:
     def __init__(self,path):
-        self.root=Path(path);self.root.mkdir(parents=True,exist_ok=True);self.ledger=Ledger(self.root/'private-actions.sqlite3')
+        self.root=Path(path).resolve()
+        # Python on Windows may lack process-wide longPathAware support.
+        # Use the native extended path namespace for private workspace I/O.
+        if os.name=='nt' and not str(self.root).startswith('\\\\?\\'):
+            value=str(self.root)
+            self.root=Path('\\\\?\\UNC\\'+value[2:] if value.startswith('\\\\') else '\\\\?\\'+value)
+        self.root.mkdir(parents=True,exist_ok=True);self.ledger=Ledger(self.root/'private-actions.sqlite3')
     def folder(self,ident):
         if not isinstance(ident,str) or not re.fullmatch('[a-f0-9]{32}',ident):raise ValueError('invalid_id')
         p=self.root/ident

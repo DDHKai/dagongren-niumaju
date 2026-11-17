@@ -7,9 +7,21 @@ import unittest
 from workspace_server import Workspace
 from result_report import generate,choose,reorder,summary,html_report,size,closure_audit,verify_saved_export
 import hashlib
+import os
 from test_prescreen_jobs import job
 
 class ResultTests(unittest.TestCase):
+    def test_deep_workspace_can_register_and_read_market(self):
+        parent=Path(__file__).resolve().parents[1]/'data/test-tmp'
+        parent.mkdir(parents=True,exist_ok=True)
+        if os.name=='nt' and not str(parent).startswith('\\\\?\\'):parent=Path('\\\\?\\'+str(parent.resolve()))
+        with tempfile.TemporaryDirectory(dir=parent) as directory:
+            deep=Path(directory)/('a'*70)/('b'*70)
+            w=Workspace(deep)
+            c=w.upload({'kind':'.txt','data':base64.b64encode('合成长路径任务'.encode()).decode(),'conditions':{'must':[],'prefer':[],'ignore':[]}})
+            r=w.screen({'id':c['id'],'policyConfirmed':True,'checkpoint':{'jobs':[job()],'companies':[]},'policy':{'weekend':'double'}})
+            self.assertEqual(len(r['marketReport']['jobs']),1)
+            self.assertEqual(len(w.state(c['id'])['marketReport']['jobs']),1)
     def test_saved_export_verification_detects_changed_and_missing_bytes(self):
         with tempfile.TemporaryDirectory() as directory:
             p=Path(directory)/'report.html';data='合成导出\n'.encode();p.write_bytes(data)
