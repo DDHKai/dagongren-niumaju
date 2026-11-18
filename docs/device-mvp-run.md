@@ -1,19 +1,19 @@
 # 可转发：Windows／macOS 收藏MVP测试与回传
 
-请测试仓库 **DDHKai/dagongren-niumaju** 的固定快照 **v0.2.0-mvp-test5**，应用版本 **0.2.0-experiment**。这是预发布验收，不是正式上线证明。Windows和macOS分别用真实设备执行；无对应系统就写未测试，不模拟冒充。iPhone/iOS不在本轮范围。不要用旧test2或滚动main。
+请测试仓库 **DDHKai/dagongren-niumaju** 的固定快照 **v0.2.0-mvp-test6**，应用版本 **0.2.0-experiment**。这是预发布验收，不是正式上线证明。Windows和macOS分别用真实设备执行；无对应系统就写未测试，不模拟冒充。iPhone/iOS不在本轮范围。不要用旧test2或滚动main。
 
 ## 一、下载正确版本
 
-打开[本轮Release](https://github.com/DDHKai/dagongren-niumaju/releases/tag/v0.2.0-mvp-test5)，下载两个附件：
+打开[本轮Release](https://github.com/DDHKai/dagongren-niumaju/releases/tag/v0.2.0-mvp-test6)，下载两个附件：
 
 - `dagongren-0.2.0-experiment.zip`
 - `dagongren-0.2.0-experiment.zip.sha256`
 
-直接下载：[ZIP](https://github.com/DDHKai/dagongren-niumaju/releases/download/v0.2.0-mvp-test5/dagongren-0.2.0-experiment.zip)、[SHA256](https://github.com/DDHKai/dagongren-niumaju/releases/download/v0.2.0-mvp-test5/dagongren-0.2.0-experiment.zip.sha256)。**不要点GitHub自动生成的“Source code (zip)”**：本轮附件另有MANIFEST，测试工具会核对源码、清单和ZIP三者一致。
+直接下载：[ZIP](https://github.com/DDHKai/dagongren-niumaju/releases/download/v0.2.0-mvp-test6/dagongren-0.2.0-experiment.zip)、[SHA256](https://github.com/DDHKai/dagongren-niumaju/releases/download/v0.2.0-mvp-test6/dagongren-0.2.0-experiment.zip.sha256)。**不要点GitHub自动生成的“Source code (zip)”**：本轮附件另有MANIFEST，测试工具会核对源码、清单和ZIP三者一致。
 
 Windows下载、源码、结果和新建虚拟环境放D盘或E盘，不下载到C盘。建议全新带空格目录，如`D:\MVP Test1\`；macOS也使用全新带空格目录。不要覆盖旧部署、不复制旧venv或浏览器配置。解压后进入`dagongren-experiment`目录，应该同时看到VERSION、TEST_SNAPSHOT、MANIFEST.json和scripts。
 
-确认VERSION为0.2.0-experiment、TEST_SNAPSHOT为v0.2.0-mvp-test5。保留原始ZIP和校验文件，测试时传给脚本，不重新压一个包冒充下载物。
+确认VERSION为0.2.0-experiment、TEST_SNAPSHOT为v0.2.0-mvp-test6。保留原始ZIP和校验文件，测试时传给脚本，不重新压一个包冒充下载物。
 
 ## 二、环境要求与边界
 
@@ -108,13 +108,13 @@ macOS的Chrome可执行文件是`/Applications/Google Chrome.app/Contents/MacOS/
 Windows：
 
 ```powershell
-& $TestPython scripts/package_device_feedback.py --results test-results --output "Windows-mvp-test5-results.zip" --reviewed
+& $TestPython scripts/package_device_feedback.py --results test-results --output "Windows-mvp-test6-results.zip" --reviewed
 ```
 
 macOS：
 
 ```sh
-"$TEST_PYTHON" scripts/package_device_feedback.py --results test-results --output "macOS-mvp-test5-results.zip" --reviewed
+"$TEST_PYTHON" scripts/package_device_feedback.py --results test-results --output "macOS-mvp-test6-results.zip" --reviewed
 ```
 
 请回传对应系统ZIP及其.zip.sha256。打包器只选诊断、合成报告、已审阅PNG和人工说明，包含文件hash及缺失清单，不上传；排除RAW-PRIVATE和所有工作区/Chrome数据。正则检查不是完整匿名保证，`--reviewed`表示你确实人工核对过。
@@ -150,3 +150,7 @@ macOS 补测必须使用包含该修复的下一固定 Release 资产及同名 S
 按用户最新要求，日常开发和回归以当前Windows设备为主；macOS改为补测设备，仅平台相关改动、明确跨系统问题或发布确需补证时定向使用，不再每次要求重复全套。既有macOS通过不保证未来所有改动兼容；Windows开发机通过也不冒称独立干净设备验收。已知宿主网络／进程／文件限制须识别并保留首次现场，不刻意在已知不支持的沙箱反复试错，更不能绕过审批或平台验证。仍遵循最小合成测试和隐私边界。
 
 收到test5 macOS反馈：官方A通过、入口观察8项通过，未绑定账号时请求按钮只定位授权区，不调用收藏或授权API。环境声明曾误写独立Python，反馈已澄清实际为工具托管3.13.12；不将其算作独立解释器验收。未选／扩展／过期的浏览器禁用行为未由8项观察直接分别验证，数据文件仅含离线HTML输出，不把该文件当作禁用门控证明。真实收藏、真人体验及效果不由合成入口观察替代。
+
+## test6 Windows修复范围
+
+本包新增Windows私有工作区原生长路径形式支持，修复深层目录写入checkpoint.json.tmp失败。仅对Windows工作区文件I/O生效，不修改原目录，不保证所有外部工具、网络共享、压缩软件均支持长路径。新浏览器断言覆盖未选、扩展和过期岗位请求协助收藏禁用。以当前Windows开发设备为主测，不要求重复macOS全套。冻结发布包应从较长路径解压后执行A完整检查，原test5失败现场保留。
