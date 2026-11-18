@@ -111,3 +111,5 @@ python scripts/package_experiment.py
 ## 反馈与贡献
 
 请提供版本、最小复现、预期/实际及合成日志，不在公开Issue发送个人履历、Cookie、令牌或私人路径。[贡献说明](CONTRIBUTING.md)列明审查和第三方归属要求。
+
+联系邮箱：[blackcatlab@163.com](mailto:blackcatlab@163.com)，欢迎大家交流。
